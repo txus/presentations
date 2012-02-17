@@ -1,0 +1,22 @@
+body
+  #impress
+    .step
+      +box-sizing(border-box)
+      +opacity(0)
+      +transition(all, 1s)
+      visibility: hidden
+      &.active
+        visibility: visible
+        +opacity(1)
+        +transition(all, 1s)
+
+      overflow: hidden
+
+#bottom_bar
+  position: fixed
+  bottom: 10px
+  left: 10px
+  #tweet, #all_slides
+    +inline-block
+  #all_slides
+    margin-left: 15px

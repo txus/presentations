@@ -1,0 +1,140 @@
+<div class="step slide" data-x="7000" data-rotate="30">
+  <h1>Noscript<h1>
+  <h5>Object-oriented, class-less language running on the Rubinius VM</h5>
+  <p>
+    <a href="http://github.com/txus/noscript">github.com/txus/noscript</a>
+  </p>
+  <%=code('ruby')%>
+greeter = Object.clone()
+greeter.salute = -> name
+  ("Hello %s!" % name).puts()
+end
+greeter.salute()
+  <%=endcode%>
+</div>
+
+<div class="step slide" data-x="8000" data-rotate="30">
+  <h2>Prototype-based inheritance</h2>
+  <%=code('ruby')%>
+awesome foo = Object.clone({
+  shout: 'hey!'
+})
+awesome bar = awesome foo.clone({
+  baz: 42
+})
+
+awesome bar.baz() # => 42
+awesome bar.shout() # => 'hey!'
+  <%=endcode%>
+</div>
+
+<div class="step slide" data-x="9000" data-rotate="30">
+  <h2>Behavior composition with Traits</h2>
+  <%=code('ruby')%>
+Colorable = Trait.build("Colorable", {
+  equals: -> other
+    @color().equals(other.color())
+  end
+})
+Shapeable = Trait.build("Shapeable", {
+  equals: -> other
+    @shape().equals(other.shape())
+  end
+})
+button = Object.clone({
+  equals: -> other
+    @Colorable equals(other) && @Shapeable equals(other)
+  end
+})
+button.uses(Colorable)
+button.uses(Shapeable)
+  <%=endcode%>
+</div>
+
+<div class="step slide" data-x="10000" data-rotate="30">
+  <h2>Compiles down to Rubinius bytecode</h2>
+  <ul>
+    <li><b>As fast</b> as any other Ruby code interpreted by Rubinius</li>
+    <li>Interoperativity API with the Ruby world</li>
+  </ul>
+
+  <%=code('ruby')%>
+Ruby.Array.def('sum', ->
+  @send('reduce', '+')
+end)
+
+[1,2,3].send('sum') # => 6
+  <%=endcode%>
+</div>
+
+<div class="step slide" data-x="11000" data-rotate="30">
+  <div style="text-align: center">
+    <%= image 'polyglot_4.png' %>
+  </div>
+</div>
+
+<div class="step slide" data-x="13000" data-rotate="30">
+  <%=code('ruby')%>
+# config/initializers/models.rb
+Dir['app/models/*.ns'].each do |model|
+  noscript_require model
+end
+  <%=endcode%>
+
+  <hr/>
+
+  <%=code('ruby')%>
+# app/models/post.ns
+Ruby.Post = Ruby.Class.create(Ruby.ActiveRecord.Base, ->
+  @send('table_name=', 'posts')
+
+  @send('validates', 'title', {presence: true})
+
+  @def('upcase_title', ->
+    @send('title').send('upcase')
+  end)
+end)
+  <%=endcode%>
+</div>
+
+<div class="step slide" data-x="14000" data-rotate="30">
+  <pre style="font-size:19px">
+$ rbx compile -B -e "foo = 3; foo + 4"
+0000:  push_int                   3
+0002:  set_local                  0    # foo
+0004:  pop
+0005:  push_local                 0    # foo
+0007:  push_int                   4
+0009:  meta_send_op_plus          :+
+0011:  pop
+0012:  push_true
+0013:  ret
+</pre>
+
+  <pre style="font-size:19px">
+$ noscript -B -e "foo = 3; foo + 4"
+0000:  push_int                   3
+0002:  set_local                  0    # foo
+0004:  pop
+0005:  push_local                 0    # foo
+0007:  push_int                   4
+0009:  meta_send_op_plus          :+
+0011:  pop
+0012:  push_true
+0013:  ret
+</pre>
+</div>
+
+<div class="step slide" data-x="15000" data-rotate="30">
+  <h1>TA-DA!</h1>
+  <div style="text-align: center">
+    <%= image 'polyglot_5.png' %>
+  </div>
+  <p>
+  <a href="https://github.com/txus/noscript">github.com/txus/noscript</a>
+  <br/>
+    <a href="https://github.com/txus/polyglot_rails_example">github.com/txus/polyglot_rails_example</a>
+  </p>
+  <p>Questions?</p>
+  <small style="font-size: 20px">By Txus <a href="http://twitter.com/txustice" target="_blank">twitter.com/txustice</a>, <a href="http://github.com/txus" target="_blank">github.com/txus</a></small>
+</div>
